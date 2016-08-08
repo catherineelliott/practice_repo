@@ -5,6 +5,7 @@ var gulpif = require('gulp-if');
 var uglify = require('gulp-uglify');
 var jshint = require('gulp-jshint');
 var sourcemaps = require('gulp-sourcemaps');
+var rename = require('gulp-rename');
 
 var paths = {
   source: {scripts: './source/javascript/**/*.js', stylesheets: './source/stylesheets/**/*.scss'},
@@ -17,10 +18,13 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('default'))
 });
 
-gulp.task('compress', ['lint'], function () {
+gulp.task('minifyjs', ['lint'], function () {
   return gulp.src(paths.source.scripts)
     .pipe(sourcemaps.init())
     .pipe(uglify())
+    .pipe(rename({
+            suffix: '.min'
+        }))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest(paths.target.scripts));
 });
@@ -33,7 +37,7 @@ gulp.task('sass', function () {
 
 gulp.task('watch', function () {
     gulp.watch(paths.source.stylesheets, ['sass:watch']);
-    gulp.watch(paths.source.scripts, ['compress']);
+    gulp.watch(paths.source.scripts, ['minifyjs']);
 });
  
 var inheritanceCondition = function (file) {
@@ -52,4 +56,4 @@ gulp.task('sass:watch', function() {
         .pipe(gulp.dest(paths.target.stylesheets));
 });
 
-gulp.task('default', ['sass', 'compress', 'watch']);
+gulp.task('default', ['sass', 'minifyjs', 'watch']);
