@@ -6,11 +6,23 @@ var uglify = require('gulp-uglify');
 var jshint = require('gulp-jshint');
 var sourcemaps = require('gulp-sourcemaps');
 var rename = require('gulp-rename');
+var webpackConfig = require("./webpack.config.js");
+var webpack = require('webpack-stream');
+//var template = require("./file.handlebars");
 
 var paths = {
   source: {scripts: './source/javascript/**/*.js', stylesheets: './source/stylesheets/**/*.scss'},
-  target: {scripts: './public/javascript', stylesheets: './public/stylesheets'}
+  target: {scripts: './public/javascript', stylesheets: './public/stylesheets'},
+  lccSource: {scripts: './lccSource/javascript/**/*.js'},
+  lccDest: {scripts: './lccDest/javascript'}
 };
+
+gulp.task('webpack', function() {
+  return gulp.src(paths.lccSource.scripts)
+    .pipe(webpack(webpackConfig))
+    //.pipe(uglify())
+    .pipe(gulp.dest(paths.lccDest.scripts));
+});
 
 gulp.task('lint', function() {
   return gulp.src(paths.source.scripts)
